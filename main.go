@@ -101,7 +101,7 @@ func oneRun(db *sql.DB, done chan int, stop chan bool) {
 	if *randomOrder {
 		orderBy = "RAND()"
 	}
-	q := fmt.Sprintf("SELECT SUM(t.id) sum FROM (SELECT id FROM %s ORDER BY %s) AS t", *tableName, orderBy)
+	q := fmt.Sprintf("SELECT id FROM %s ORDER BY %s LIMIT 1", *tableName, orderBy)
 	reqs := 0
 	for {
 		select {
@@ -111,8 +111,8 @@ func oneRun(db *sql.DB, done chan int, stop chan bool) {
 			return
 		default:
 		}
-		var sum int
-		panicOnError(db.QueryRow(q).Scan(&sum))
+		var id int
+		panicOnError(db.QueryRow(q).Scan(&id))
 		reqs += 1
 	}
 }
